@@ -5,10 +5,10 @@ import numpy as np
 from numpy import linalg as LA
 import matplotlib.pyplot as plt
 
-folder_path = 'C:/Users/aless/Documents/NTNU/Datadrevet/IT3212-Assignment-2/PCA/hatchback'
+folder_path = 'C:/Users/Aksel/Documents/SKOLE/NTNU/host2024/datadrevet/IT3212-Assignment-2/PCA/hatchback'
 
 # Convert images to grayscale and save
-
+imageList = []
 for filename in os.listdir(folder_path):
     img_path = os.path.join(folder_path, filename)
     image = cv2.imread(img_path)
@@ -16,6 +16,7 @@ for filename in os.listdir(folder_path):
     # Resize the image to 300x300
     gray_image = cv2.resize(gray_image, (50, 50))
     cv2.imwrite(img_path, gray_image)
+    imageList.append(gray_image)
 
 
 # Normalize pixel values
@@ -57,7 +58,7 @@ for i in range(0, len(eigenvalues)):
 vectorDict = dict(sorted(vectorDict.items(), key=lambda item: item[1], reverse=True))
 
 # Get the top k eigenvectors to create principal components
-k = 40
+k = 2
 PCs =  list(vectorDict.keys())[:k]
 PCs = np.array(PCs)
 
@@ -69,20 +70,19 @@ reconstructedImages = np.dot(reducedImages, PCs) + imageMean
 
 reconstructedImages = reconstructedImages.reshape(-1, 50, 50)
 
-'''if np.iscomplexobj(reconstructedImages):
-    reconstructedImages = np.real(reconstructedImages)'''
 
-plt.figure(figsize=(12, 6))
+# Display one set of reconstructed images
+'''plt.figure(figsize=(12, 6))
 for i in range (0,6):
     plt.subplot(2,3,i+1)
     plt.imshow(reconstructedImages[i], cmap='gray')
     plt.axis('off')
 
 plt.tight_layout()
-plt.show()
+plt.show()'''
 
 # Calculate and plot the amount of variance contained in the principal components
-variances_k = []
+'''variances_k = []
 totalVariance = np.sum(eigenvalues)
 
 for i in range (0, 200):
@@ -100,4 +100,59 @@ plt.ylabel('Variance')
 
 plt.legend()
 plt.grid()
+plt.show()'''
+
+# Show original images with reconstructions
+'''k_list = [2, 60, 100, 200]
+recon_list = []
+for i in range(0,4):
+    recon_list.append([imageList[i]])
+    
+for i in range(0,4):
+    PCs =  list(vectorDict.keys())[:k_list[i]]
+    PCs = np.array(PCs)
+    reducedImages = np.dot(images_2d, PCs.T)
+    reconstructedImages = np.dot(reducedImages, PCs) + imageMean
+    reconstructedImages = reconstructedImages.reshape(-1, 50, 50)
+    for j in range(0,4):
+        recon_list[j].append(reconstructedImages[j])
+
+# Plot originals with reconstructs
+fig, axes = plt.subplots(nrows=4, ncols=5, figsize=(15, 12))
+column_titles = ['Original Image', '2 PCs', '60 PCs', '100 PCs', '200 PCs']
+for row in range(4):  # 4 rows
+    for col in range(5):  # 5 images per row
+        axes[row, col].imshow(recon_list[row][col], cmap='gray')  # Use cmap='gray' if images are grayscale
+        axes[row, col].axis('off')  # Turn off the axis
+
+        if row == 0:
+                axes[row, col].set_title(column_titles[col], fontsize=12)
+# Adjust layout so there's no overlap
+plt.tight_layout()
+plt.show()'''
+
+# Get MSE between original images and reconstructed
+
+k_list = [2, 60, 100, 200]
+MSE_list = []
+for kPCs in k_list:
+    PCs =  list(vectorDict.keys())[:kPCs]
+    PCs = np.array(PCs)
+    reducedImages = np.dot(images_2d, PCs.T)
+    reconstructedImages = np.dot(reducedImages, PCs) + imageMean
+    reconstructedImages = reconstructedImages.reshape(-1, 50, 50)
+    print(scaled_images[0][0] - reconstructedImages[0][0])
+    # Compute MSE
+    mse = np.mean((scaled_images - reconstructedImages) ** 2) * 100
+    MSE_list.append(mse)
+
+print(MSE_list)
+plt.figure(figsize=(10, 6))
+plt.plot(k_list, MSE_list,  linestyle='-', color='b', label='MSE per PCs')
+plt.xticks(k_list)  # Set the x-ticks to the values in k_list
+plt.xlabel('Number of Principal Components (PCs)')
+plt.ylabel('Mean Squared Error %')
+plt.title('MSE vs Number of Principal Components')
+plt.grid(True)
+plt.legend()
 plt.show()
