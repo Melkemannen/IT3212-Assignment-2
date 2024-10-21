@@ -3,6 +3,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+#Generative AI (Chat GPT and GitHub copilot) was used to help explain and complete this part of the assignment
+
 #Dataset used: Vehicle type recognition dataset
 folder_path = "C:/Users/morom/Documents/git repos/datadrevet/assignment 2/IT3212-Assignment-2/Fourier/r7bthvstxw-1/hatchback"
     
@@ -82,7 +84,7 @@ plt.show()
 # and discuss the effects observed. Submit images, and explanation.
 hi_dft = np.fft.fft2(single_image)
 hi_fshift = np.fft.fftshift(hi_dft)
-hi_fshift[crow-30:crow+31, ccol-30:ccol+31] = 0
+hi_fshift[crow-30:crow+30, ccol-30:ccol+30] = 0
 f_ishift = np.fft.ifftshift(hi_fshift)
 img_back = np.fft.ifft2(f_ishift)
 img_back = np.real(img_back)
@@ -99,6 +101,33 @@ plt.show()
 # only a certain percentage of the Fourier coefficients. Evaluate the quality of the
 # reconstructed image as you vary the percentage of coefficients used. Submit the images,
 # and your observations on image quality and compression ratio.
+percentages = [0.01, 0.10, 0.25, 0.50]
+
+def compressImage(image, percentage):
+    dft = np.fft.fft2(image)
+    sort_magnitudes = np.sort(np.abs(dft.reshape(-1)))
+    
+    thres_index = int(np.floor((1-percentage)*len(sort_magnitudes)))
+    threshold = sort_magnitudes[thres_index]
+    
+    dft_compressed = dft * (np.abs(dft) > threshold)
+    
+    compressed_image = np.fft.ifft2(dft_compressed)
+    compressed_image = np.real(compressed_image)
+    
+    return compressed_image
+
+plt.figure(figsize=(12, 12))
+for i, percentage in enumerate(percentages):
+    compressed_image = compressImage(single_image, percentage)
+    #save compressed images
+    cv2.imwrite(f'compressed_image_{percentage}.jpg', compressed_image)
+    plt.subplot(2, 2, i+1)
+    plt.imshow(compressed_image, cmap='gray')
+    plt.title(f'Compressed Image\nPercentage: {percentage*100}%')
+plt.show()
+
+    
 
 #Here i will submit the entire hatchback folder as an example
 
