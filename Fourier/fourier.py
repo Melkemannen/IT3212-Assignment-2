@@ -40,7 +40,32 @@ plt.show()
 # Implement a low-pass filter in the frequency domain to remove high-frequency noise from
 # an image. Compare the filtered image with the original image. Submit images, and analysis
 # of the results.
+rows, cols = single_image.shape
+crow, ccol = rows//2, cols//2
+#mask, we are going with a 3x3 kernel with equal weighting
+mask = np.zeros((rows, cols, 2), np.float32)
+mask[crow-1:crow+2, ccol-1:ccol+2] = 1/9
+#Looks like this
+# [1/9 1/9 1/9]
+# [1/9 1/9 1/9]
+# [1/9 1/9 1/9]
+# EDIT: this kernel is bad
+# Source: https://www.nv5geospatialsoftware.com/docs/LowPassFilter.html
+# AND: IDATG2206 lectures (2023, Spring)
 
+#apply the mask and inverse DFT
+fshift = dft_shift*mask
+f_ishift = np.fft.ifftshift(fshift)
+img_back = cv2.idft(f_ishift)
+#img_back = cv2.magnitude(img_back[:,:,0],img_back[:,:,1])
+
+plt.figure(figsize=(12, 6))
+plt.subplot(121), plt.imshow(single_image, cmap='gray')
+plt.title('Original Image')
+plt.subplot(122), plt.imshow(cv2.magnitude(img_back[:,:,0],img_back[:,:,1]), cmap='gray')
+plt.title('Low-pass Filtered Image')
+plt.show()
+#todo: Lowpass filter
 
 #3. 
 # Implement a high-pass filter to enhance the edges in an image. Visualize the filtered image
