@@ -80,7 +80,19 @@ plt.show()
 #3. 
 # Implement a high-pass filter to enhance the edges in an image. Visualize the filtered image
 # and discuss the effects observed. Submit images, and explanation.
-
+hi_dft = np.fft.fft2(single_image)
+hi_fshift = np.fft.fftshift(hi_dft)
+hi_fshift[crow-30:crow+31, ccol-30:ccol+31] = 0
+f_ishift = np.fft.ifftshift(hi_fshift)
+img_back = np.fft.ifft2(f_ishift)
+img_back = np.real(img_back)
+# TODO: Fix this....
+plt.figure(figsize=(12, 6))
+plt.subplot(121), plt.imshow(single_image, cmap='gray')
+plt.title('Original Image')
+plt.subplot(122), plt.imshow(img_back, cmap='gray')
+plt.title('High-pass Filtered Image')
+plt.show()
 
 #4. 
 # Implement an image compression technique using Fourier Transform by selectively keeping
