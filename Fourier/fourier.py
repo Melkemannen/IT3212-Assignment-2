@@ -43,13 +43,23 @@ plt.show()
 rows, cols = single_image.shape
 crow, ccol = rows//2, cols//2
 #mask, we are going with a 3x3 kernel with equal weighting
+
 mask = np.zeros((rows, cols, 2), np.float32)
-mask[crow-1:crow+2, ccol-1:ccol+2] = 1/9
-#Looks like this
+mask[crow-30:crow+30, ccol-30:ccol+30] = 1 
+# Remember to write about the different kernels in the report, and effects
+# DOES NOT: Looks like this
 # [1/9 1/9 1/9]
 # [1/9 1/9 1/9]
 # [1/9 1/9 1/9]
-# EDIT: this kernel is bad
+# EDIT: this kernel is bad, trying
+# [1/16 1/8 1/16]
+# [1/8 1/4 1/8]
+# [1/16 1/8 1/16]
+# EDIT: this kernel is also bad, trying
+# [1/10 1/5 1/10]
+# [1/5 1/2 1/5]
+# [1/10 1/5 1/10]
+# EDIT: All are bad, using from https://docs.opencv.org/4.x/de/dbc/tutorial_py_fourier_transform.html
 # Source: https://www.nv5geospatialsoftware.com/docs/LowPassFilter.html
 # AND: IDATG2206 lectures (2023, Spring)
 
