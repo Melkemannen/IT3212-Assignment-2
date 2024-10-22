@@ -70,7 +70,23 @@ fshift = dft_shift*mask
 f_ishift = np.fft.ifftshift(fshift)
 img_back = cv2.idft(f_ishift)
 #img_back = cv2.magnitude(img_back[:,:,0],img_back[:,:,1])
+#show frequency spectrum (magnitude) of the filtered image
+# Compute the magnitude spectrum of img_back
+img_back_magnitude = cv2.magnitude(img_back[:,:,0], img_back[:,:,1])
 
+# Perform the Discrete Fourier Transform (DFT)
+dft_img_back = cv2.dft(np.float32(img_back_magnitude), flags=cv2.DFT_COMPLEX_OUTPUT)
+
+# Shift the zero-frequency component to the center of the spectrum
+dft_shift_img_back = np.fft.fftshift(dft_img_back)
+
+# Compute the magnitude spectrum of the shifted DFT
+mag_spectrum_img_back = 20 * np.log(cv2.magnitude(dft_shift_img_back[:,:,0], dft_shift_img_back[:,:,1]))
+
+plt.subplot(121), plt.imshow(mag_spectrum_img_back, cmap='gray')
+plt.title('Magnitude Spectrum of lowpass filtered image')
+plt.show()
+                                
 plt.figure(figsize=(12, 6))
 plt.subplot(121), plt.imshow(single_image, cmap='gray')
 plt.title('Original Image')
@@ -86,8 +102,21 @@ hi_dft = np.fft.fft2(single_image)
 hi_fshift = np.fft.fftshift(hi_dft)
 hi_fshift[crow-30:crow+30, ccol-30:ccol+30] = 0
 f_ishift = np.fft.ifftshift(hi_fshift)
+img_back = 0
 img_back = np.fft.ifft2(f_ishift)
 img_back = np.real(img_back)
+#display magnitude spectrum of the high-pass filtered image
+dft_img_back2 = cv2.dft(np.float32(img_back), flags=cv2.DFT_COMPLEX_OUTPUT)
+dft_shift_img_back2 = np.fft.fftshift(dft_img_back2)
+
+# Compute the magnitude spectrum of the shifted DFT
+mag_spectrum_img_back2 = 20 * np.log(cv2.magnitude(dft_shift_img_back2[:,:,0], dft_shift_img_back2[:,:,1]))
+
+plt.subplot(121), plt.imshow(mag_spectrum_img_back2, cmap='gray')
+plt.title('Magnitude Spectrum of highpass filtered image')
+plt.show()
+
+
 # TODO: Fix this....
 plt.figure(figsize=(12, 6))
 plt.subplot(121), plt.imshow(single_image, cmap='gray')
