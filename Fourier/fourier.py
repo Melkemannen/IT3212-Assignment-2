@@ -145,7 +145,7 @@ def compressImage(image, percentage):
     compressed_image = np.real(compressed_image)
     
     return compressed_image
-
+"""""
 plt.figure(figsize=(12, 12))
 for i, percentage in enumerate(percentages):
     compressed_image = compressImage(single_image, percentage)
@@ -155,6 +155,28 @@ for i, percentage in enumerate(percentages):
     plt.imshow(compressed_image, cmap='gray')
     plt.title(f'Compressed Image\nPercentage: {percentage*100}%')
 plt.show()
+"""""
+#show magnitudes of the compressed images
+plt.figure(figsize=(12, 12))
+for i, percentage in enumerate(percentages):
+    compressed_image = compressImage(single_image, percentage) 
+    compressed_dft = cv2.dft(np.float32(compressed_image), flags=cv2.DFT_COMPLEX_OUTPUT)  
+    compressed_dft_shift = np.fft.fftshift(compressed_dft)
+    mag_spectrum_compressed = 20*np.log(cv2.magnitude(compressed_dft_shift[:,:,0], compressed_dft_shift[:,:,1]))
+    plt.subplot(2, 2, i+1)
+    plt.imshow(mag_spectrum, cmap='gray')
+    plt.title(f'Magnitude Spectrum\nPercentage: {percentage*100}%')
+plt.show()
+"""
+#5% compression ratio imgage
+compressed_image_five = compressImage(single_image, 0.05)
+#write to file
+cv2.imwrite('compressed_image_five.jpg', compressed_image_five)
+plt.figure(figsize=(12, 6))
+plt.subplot(121), plt.imshow(compressed_image_five, cmap='gray')
+plt.title('Compressed Image\nPercentage: 5%')
+plt.show()
+"""
 
     
 
